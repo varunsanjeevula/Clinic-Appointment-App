@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useStats, useRecentAppointments, useUser } from "@/lib/queries";
-import { Users, CalendarCheck, AlertCircle, HeartPulse, UserPlus, ClipboardList, Stethoscope, TrendingUp, Clock, LogOut, Mail, Calendar as CalendarIcon } from "lucide-react";
+import { Users, CalendarCheck, AlertCircle, HeartPulse, UserPlus, ClipboardList, Stethoscope, TrendingUp, Clock, LogOut, Mail, Calendar as CalendarIcon, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -70,6 +70,7 @@ export default function DashboardPage() {
   const { data: stats, isLoading: statsLoading } = useStats();
   const { data: recent, isLoading: recentLoading } = useRecentAppointments();
   const { data: user, isLoading: userLoading } = useUser();
+  const isAdmin = user?.email?.toLowerCase() === "admin@gmail.com";
 
   return (
     <AppShell>
@@ -104,10 +105,11 @@ export default function DashboardPage() {
           <h2 className="text-base font-semibold mb-3">Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
-              { href: "/register", icon: UserPlus, label: "Register Patient", sub: "New patient intake", color: "text-primary" },
-              { href: "/queue", icon: ClipboardList, label: "View Queue", sub: "Priority appointments", color: "text-blue-500" },
-              { href: "/doctors", icon: Stethoscope, label: "Manage Doctors", sub: "Leaves & availability", color: "text-amber-500" },
-            ].map((a) => (
+              { href: "/register", icon: UserPlus, label: "Register Patient", sub: "New patient intake", color: "text-primary", showFor: "user" },
+              { href: "/my-appointments", icon: CalendarDays, label: "Your Appointments", sub: "Manage visits", color: "text-blue-500", showFor: "user" },
+              { href: "/queue", icon: ClipboardList, label: "View Queue", sub: "Priority appointments", color: "text-teal-500", showFor: "admin" },
+              { href: "/doctors", icon: Stethoscope, label: "Manage Doctors", sub: "Leaves & availability", color: "text-amber-500", showFor: "admin" },
+            ].filter(a => a.showFor === "both" || (isAdmin && a.showFor === "admin") || (!isAdmin && a.showFor === "user")).map((a) => (
               <Link key={a.href} href={a.href}>
                 <Card className="hover:shadow-sm hover:border-primary/20 transition-all duration-200 cursor-pointer group h-full">
                   <CardContent className="flex items-center gap-3 p-4">

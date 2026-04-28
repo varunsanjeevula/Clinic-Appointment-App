@@ -88,7 +88,7 @@ export default function AuthPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      router.push("/book");
+      router.push("/");
     } catch (err: any) {
       setError(err.message);
       setIsLoading(false);
@@ -117,7 +117,7 @@ export default function AuthPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      router.push("/book");
+      router.push("/");
     } catch (err: any) {
       setError(err.message);
       setIsLoading(false);

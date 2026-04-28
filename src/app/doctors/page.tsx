@@ -9,16 +9,31 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useDoctors, useDoctorLeaves, useSetDoctorLeave } from "@/lib/queries";
-import { Search, Star } from "lucide-react";
+import { useDoctors, useDoctorLeaves, useSetDoctorLeave, useUser } from "@/lib/queries";
+import { Search, Star, ShieldAlert } from "lucide-react";
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import type { Doctor } from "@/lib/types";
 
 export default function DoctorsPage() {
+  const { data: user, isLoading: userLoading } = useUser();
   const { data: doctors, isLoading } = useDoctors();
   const [search, setSearch] = useState("");
   const [leaveDoctor, setLeaveDoctor] = useState<Doctor | null>(null);
+
+  const isAdmin = user?.email?.toLowerCase() === "admin@gmail.com";
+
+  if (!userLoading && !isAdmin) {
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+          <ShieldAlert className="w-16 h-16 text-destructive mb-4" />
+          <h1 className="text-2xl font-bold">Access Denied</h1>
+          <p className="text-muted-foreground mt-2">Only administrators can manage doctors.</p>
+        </div>
+      </AppShell>
+    );
+  }
 
   const filtered = useMemo(() => {
     if (!doctors) return [];

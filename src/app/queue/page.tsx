@@ -7,18 +7,33 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useAppointmentQueue, useCancelAppointment } from "@/lib/queries";
+import { useAppointmentQueue, useCancelAppointment, useUser } from "@/lib/queries";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
+import { Star, ShieldAlert } from "lucide-react";
 import type { Appointment } from "@/lib/types";
 
 export default function QueuePage() {
+  const { data: user, isLoading: userLoading } = useUser();
   const { data: appointments, isLoading } = useAppointmentQueue();
   const cancelMutation = useCancelAppointment();
   const [filter, setFilter] = useState("all");
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [viewAppointment, setViewAppointment] = useState<Appointment | null>(null);
+
+  const isAdmin = user?.email?.toLowerCase() === "admin@gmail.com";
+
+  if (!userLoading && !isAdmin) {
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+          <ShieldAlert className="w-16 h-16 text-destructive mb-4" />
+          <h1 className="text-2xl font-bold">Access Denied</h1>
+          <p className="text-muted-foreground mt-2">Only administrators can access the appointment queue.</p>
+        </div>
+      </AppShell>
+    );
+  }
 
   const filtered = (appointments ?? []).filter(a => filter === "all" || a.severity === filter);
   const critical = filtered.filter(a => a.severity === "critical");

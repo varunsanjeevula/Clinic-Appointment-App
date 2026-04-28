@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Clinic Appointment Management System — Smart patient triage, doctor booking, and priority queue management powered by Supabase.">
+  <title>MedQueue — Clinic Appointment Manager</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- ============================
+         SIDEBAR NAVIGATION
+         ============================ -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">🏥</span>
+        <div class="brand-name">Med<span>Queue</span></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" data-page="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#register" class="nav-item" data-page="register">
+          <i data-lucide="user-plus"></i>
+          <span>Register Patient</span>
+        </a>
+        <a href="#queue" class="nav-item" data-page="queue">
+          <i data-lucide="list-ordered"></i>
+          <span>Appointment Queue</span>
+        </a>
+        <a href="#doctors" class="nav-item" data-page="doctors">
+          <i data-lucide="stethoscope"></i>
+          <span>Doctors</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>© 2026 MedQueue</p>
+        <p>Clinic Management System</p>
+      </div>
+    </aside>
+
+    <!-- ============================
+         MOBILE BOTTOM NAV
+         ============================ -->
+    <nav class="mobile-nav">
+      <a href="#dashboard" class="nav-item active" data-page="dashboard">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#register" class="nav-item" data-page="register">
+        <i data-lucide="user-plus"></i>
+        <span>Register</span>
+      </a>
+      <a href="#queue" class="nav-item" data-page="queue">
+        <i data-lucide="list-ordered"></i>
+        <span>Queue</span>
+      </a>
+      <a href="#doctors" class="nav-item" data-page="doctors">
+        <i data-lucide="stethoscope"></i>
+        <span>Doctors</span>
+      </a>
+    </nav>
+
+    <!-- ============================
+         MAIN CONTENT AREA
+         ============================ -->
+    <main class="main-content">
+
+      <!-- ========================
+           DISCLAIMER BANNER
+           ======================== -->
+      <div class="disclaimer-banner">
+        <i data-lucide="alert-triangle" style="width:18px;height:18px;flex-shrink:0"></i>
+        <span><strong>Disclaimer:</strong> This is a demonstration system. Symptom triage is keyword-based and should never replace professional medical advice. Always consult a qualified healthcare provider.</span>
+      </div>
+
+      <!-- ========================
+           PAGE: DASHBOARD
+           ======================== -->
+      <div id="page-dashboard" class="page active">
+        <div class="page-header">
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-description">Overview of today's clinic activity and recent appointments.</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card accent">
+            <div class="stat-icon accent">
+              <i data-lucide="users"></i>
+            </div>
+            <div class="stat-value" id="statPatients">—</div>
+            <div class="stat-label">Total Patients</div>
+          </div>
+
+          <div class="stat-card normal">
+            <div class="stat-icon normal">
+              <i data-lucide="calendar-check"></i>
+            </div>
+            <div class="stat-value" id="statToday">—</div>
+            <div class="stat-label">Today's Appointments</div>
+          </div>
+
+          <div class="stat-card critical">
+            <div class="stat-icon critical">
+              <i data-lucide="alert-circle"></i>
+            </div>
+            <div class="stat-value" id="statCritical">—</div>
+            <div class="stat-label">Critical Cases</div>
+          </div>
+
+          <div class="stat-card warning">
+            <div class="stat-icon warning">
+              <i data-lucide="heart-pulse"></i>
+            </div>
+            <div class="stat-value" id="statDoctors">—</div>
+            <div class="stat-label">Available Doctors</div>
+          </div>
+        </div>
+
+        <!-- Recent Appointments -->
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Recent Appointments</h2>
+            <p class="section-subtitle">Latest bookings across all clinics</p>
+          </div>
+        </div>
+
+        <div class="glass-card-static" style="overflow-x:auto">
+          <table class="recent-table">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Hospital</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+            <tbody id="recentBody">
+              <tr>
+                <td colspan="6" class="empty-state">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ========================
+           PAGE: REGISTER PATIENT
+           ======================== -->
+      <div id="page-register" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Register Patient</h1>
+          <p class="page-description">Enter patient details and symptoms for smart triage assessment.</p>
+        </div>
+
+        <div class="register-form">
+          <div class="glass-card-static">
+            <form id="registerForm" autocomplete="off">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="patientName">Full Name</label>
+                  <input type="text" class="form-input" id="patientName" placeholder="e.g. Rajesh Kumar" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="patientPhone">Contact Number</label>
+                  <input type="tel" class="form-input" id="patientPhone" placeholder="e.g. +91 98765 43210" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="patientAddress">Address</label>
+                <input type="text" class="form-input" id="patientAddress" placeholder="e.g. 123 Main Street, City" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="patientSymptoms">Describe Symptoms</label>
+                <textarea class="form-textarea form-input" id="patientSymptoms" rows="4" placeholder="Describe all symptoms in detail, e.g. 'severe chest pain, difficulty breathing, dizziness for 2 hours'" required></textarea>
+                <p style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-xs)">
+                  💡 Be descriptive — our triage engine scans for keywords like "chest pain", "fever", "headache", "fracture", etc.
+                </p>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i data-lucide="scan-search" style="width:18px;height:18px"></i>
+                Analyze & Register
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================
+           PAGE: TRIAGE RESULTS
+           ======================== -->
+      <div id="page-triage" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Triage Assessment</h1>
+          <p class="page-description">AI-powered symptom analysis and hospital recommendations.</p>
+        </div>
+
+        <div class="triage-container">
+          <!-- Severity Result -->
+          <div id="triageResultArea"></div>
+
+          <!-- Suggested Specialties -->
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Suggested Specialties</h2>
+              <p class="section-subtitle">Based on the reported symptoms</p>
+            </div>
+          </div>
+          <div id="suggestedSpecialties" style="display:flex;flex-wrap:wrap;gap:var(--space-sm);margin-bottom:var(--space-2xl)"></div>
+
+          <!-- Hospital Recommendations -->
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Recommended Hospitals</h2>
+              <p class="section-subtitle">Sorted by specialty match and rating</p>
+            </div>
+          </div>
+          <div id="hospitalRecommendations" class="cards-grid"></div>
+        </div>
+      </div>
+
+      <!-- ========================
+           PAGE: BOOKING FLOW
+           ======================== -->
+      <div id="page-booking" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Book Appointment</h1>
+          <p class="page-description">at <strong id="bookingHospitalName"></strong></p>
+        </div>
+
+        <!-- Step Indicators -->
+        <div class="booking-steps">
+          <div class="step active">
+            <div class="step-number">1</div>
+            <span>Select Doctor</span>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <span>Pick Date</span>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <span>Choose Slot</span>
+          </div>
+        </div>
+
+        <!-- Doctor Selection -->
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Available Doctors</h2>
+            <p class="section-subtitle">Recommended doctors are highlighted</p>
+          </div>
+        </div>
+        <div id="doctorsList" class="cards-grid" style="margin-bottom:var(--space-2xl)"></div>
+
+        <!-- Date Picker -->
+        <div id="datePickerArea" style="display:none;margin-bottom:var(--space-2xl)"></div>
+
+        <!-- Time Slots -->
+        <div id="timeSlotsArea" style="display:none;margin-bottom:var(--space-2xl)"></div>
+
+        <!-- Confirmation -->
+        <div id="confirmArea" style="display:none"></div>
+      </div>
+
+      <!-- ========================
+           PAGE: APPOINTMENT QUEUE
+           ======================== -->
+      <div id="page-queue" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Appointment Queue</h1>
+          <p class="page-description">Priority-ordered list — critical patients are served first.</p>
+        </div>
+
+        <div id="queueContainer">
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading queue...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================
+           PAGE: DOCTOR MANAGEMENT
+           ======================== -->
+      <div id="page-doctors" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Doctor Management</h1>
+          <p class="page-description">View all doctors, availability status, and manage leaves.</p>
+        </div>
+
+        <div id="doctorsContainer">
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading doctors...</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ============================
+       MODAL
+       ============================ -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle"></h3>
+        <button class="modal-close" id="modalCloseBtn" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+
+  <!-- ============================
+       TOAST NOTIFICATIONS
+       ============================ -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ============================
+       SCRIPTS (order matters)
+       ============================ -->
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/symptomAnalyzer.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

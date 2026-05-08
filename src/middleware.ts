@@ -11,6 +11,7 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = request.nextUrl.pathname.startsWith("/book") || 
                            request.nextUrl.pathname.startsWith("/queue") ||
                            request.nextUrl.pathname.startsWith("/doctors") ||
+                           request.nextUrl.pathname.startsWith("/hospitals") ||
                            request.nextUrl.pathname === "/";
                            
   const isAuthRoute = request.nextUrl.pathname === "/login";
@@ -53,6 +54,7 @@ export const config = {
     "/book/:path*",
     "/queue/:path*",
     "/doctors/:path*",
+    "/hospitals/:path*",
     "/login"
   ],
 };

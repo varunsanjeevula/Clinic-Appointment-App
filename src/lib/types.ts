@@ -26,10 +26,16 @@ export interface Hospital {
   id: string;
   name: string;
   address: string;
+  district: string;
   type: "hospital" | "clinic";
   specialties: string[];
   rating: number;
   has_emergency: boolean;
+  phone?: string;
+  lat: number;
+  lng: number;
+  accreditation?: string;
+  distance?: number;
 }
 
 export interface Doctor {

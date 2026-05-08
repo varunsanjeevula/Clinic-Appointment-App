@@ -6,7 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMyAppointments } from "@/lib/queries";
 import { motion } from "framer-motion";
-import { Calendar, Clock, MapPin, User, Activity } from "lucide-react";
+import { Calendar, Clock, MapPin, User, Navigation } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TN_HOSPITALS } from "@/lib/hospital-data";
 
 export default function YourAppointmentsPage() {
   const { data: appointments, isLoading, error } = useMyAppointments();
@@ -83,6 +85,27 @@ export default function YourAppointmentsPage() {
                         <User className="w-4 h-4 text-primary/70" />
                         <span className="line-clamp-1">Patient: {a.patient_name}</span>
                       </div>
+                    </div>
+                    
+                    <div className="mt-5 pt-4 border-t border-border">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                        onClick={() => {
+                          const hospital = TN_HOSPITALS.find(h => h.name === a.hospital_name || h.id === a.hospital_id);
+                          if (hospital) {
+                            // Use Google Maps directions with precise coordinates
+                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${hospital.lat},${hospital.lng}`, '_blank');
+                          } else {
+                            // Fallback to name search
+                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(a.hospital_name + " Hospital")}`, '_blank');
+                          }
+                        }}
+                      >
+                        <Navigation className="w-4 h-4" />
+                        Navigate to Hospital
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

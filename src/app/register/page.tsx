@@ -9,8 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useRegisterPatient, useHospitals } from "@/lib/queries";
 import { useBookingState } from "@/lib/booking-context";
-import { ScanSearch, Loader2, AlertTriangle, CheckCircle2, Star, MailCheck } from "lucide-react";
-import { useState } from "react";
+import { ScanSearch, Loader2, AlertTriangle, CheckCircle2, Star, MailCheck, Locate, Navigation } from "lucide-react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Patient, TriageResult, Hospital } from "@/lib/types";
 import Link from "next/link";
@@ -25,6 +25,20 @@ export default function RegisterPage() {
   const registerMutation = useRegisterPatient();
   const { data: hospitals } = useHospitals();
   const bookingState = useBookingState();
+  const [userLoc, setUserLoc] = useState<{ lat: number; lng: number } | null>(null);
+  const [locating, setLocating] = useState(false);
+
+  const handleLocate = useCallback(() => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocating(false);
+      },
+      () => setLocating(false)
+    );
+  }, []);
 
   const { register, handleSubmit, formState: { errors } } = useForm<PatientRegistrationInput>({
     resolver: zodResolver(patientRegistrationSchema),
@@ -42,7 +56,24 @@ export default function RegisterPage() {
   }
 
   const recommended = hospitals?.filter(h => h.specialties.some(s => triage?.suggestedSpecialties.includes(s)))
+    .map(h => {
+      // Calculate distance if location is available
+      let distance = undefined;
+      if (userLoc && h.lat && h.lng) {
+        const R = 6371; // km
+        const dLat = (h.lat - userLoc.lat) * Math.PI / 180;
+        const dLon = (h.lng - userLoc.lng) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(userLoc.lat * Math.PI / 180) * Math.cos(h.lat * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        distance = R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+      }
+      return { ...h, distance };
+    })
     .sort((a, b) => {
+      if (userLoc && a.distance != null && b.distance != null) {
+        return a.distance - b.distance; // Prioritize distance if location is shared
+      }
       const am = a.specialties.filter(s => triage!.suggestedSpecialties.includes(s)).length;
       const bm = b.specialties.filter(s => triage!.suggestedSpecialties.includes(s)).length;
       return bm - am || b.rating - a.rating;
@@ -217,7 +248,19 @@ export default function RegisterPage() {
 
               {/* Hospitals */}
               <div>
-                <h3 className="text-sm font-semibold mb-3">Recommended Hospitals</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold">Recommended Hospitals</h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleLocate} 
+                    disabled={locating}
+                    className="h-7 text-xs gap-1.5"
+                  >
+                    {locating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Locate className="w-3 h-3" />}
+                    {userLoc ? "Location Active" : "Sort by Nearest"}
+                  </Button>
+                </div>
                 <div className="grid grid-cols-1 gap-3">
                   {recommended.map((h, i) => (
                     <motion.div key={h.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
@@ -249,7 +292,7 @@ function HospitalCard({ hospital: h, triage }: { hospital: Hospital; triage: Tri
               <h4 className="font-semibold text-sm">{h.name}</h4>
               {h.has_emergency && <Badge variant="destructive" className="text-[9px]">🚑 ER</Badge>}
             </div>
-            <p className="text-[11px] text-muted-foreground mb-2">📍 {h.address}</p>
+            <p className="text-[11px] text-muted-foreground mb-2">📍 {h.district} · {h.address}</p>
             <div className="flex flex-wrap gap-1">
               {h.specialties.map(s => (
                 <Badge key={s} variant={triage.suggestedSpecialties.includes(s) ? "default" : "outline"} className="text-[9px]">{s}</Badge>
@@ -257,9 +300,12 @@ function HospitalCard({ hospital: h, triage }: { hospital: Hospital; triage: Tri
             </div>
           </div>
           <div className="text-right flex-shrink-0 ml-4">
-            <div className="flex items-center gap-1 text-amber-500 text-xs mb-2">
+            <div className="flex items-center gap-1 text-amber-500 text-xs mb-1">
               <Star className="w-3 h-3 fill-current" />{h.rating}
             </div>
+            {h.distance != null && (
+              <p className="text-[10px] text-blue-500 font-medium mb-1">{h.distance.toFixed(1)} km</p>
+            )}
             <Button size="sm" asChild>
               <Link href={`/book?hospital=${h.id}`}>Book →</Link>
             </Button>

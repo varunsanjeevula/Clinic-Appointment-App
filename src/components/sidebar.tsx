@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, UserPlus, ListOrdered, Stethoscope, Activity, CalendarDays, BarChart, Settings, Shield, HelpCircle, FileText, Bell, UserCircle } from "lucide-react";
+import { LayoutDashboard, UserPlus, ListOrdered, Stethoscope, Activity, CalendarDays, BarChart, Settings, Shield, HelpCircle, FileText, Bell, UserCircle, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/lib/queries";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/register", label: "Register Patient", icon: UserPlus },
+  { href: "/hospitals", label: "Hospitals", icon: MapPin },
   { href: "/my-appointments", label: "Your Appointments", icon: CalendarDays },
   { href: "/queue", label: "Appointment Queue", icon: ListOrdered },
   { href: "/doctors", label: "Doctors", icon: Stethoscope },
@@ -35,9 +36,9 @@ export function Sidebar() {
 
   const filteredNavItems = navItems.filter(item => {
     if (isAdmin) {
-      return ["/", "/queue", "/doctors"].includes(item.href);
+      return ["/", "/hospitals", "/queue", "/doctors"].includes(item.href);
     } else {
-      return ["/", "/my-appointments", "/register"].includes(item.href);
+      return ["/", "/hospitals", "/my-appointments", "/register"].includes(item.href);
     }
   });
 

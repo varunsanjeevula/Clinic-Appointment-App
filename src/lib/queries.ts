@@ -34,8 +34,21 @@ export function useUser() {
   return useQuery<User>({ queryKey: ["user"], queryFn: () => fetchJson("/api/auth/me"), retry: false });
 }
 
-export function useHospitals() {
-  return useQuery<Hospital[]>({ queryKey: ["hospitals"], queryFn: () => fetchJson("/api/hospitals") });
+export function useHospitals(filters?: { district?: string; lat?: number; lng?: number; specialty?: string }) {
+  const params = new URLSearchParams();
+  if (filters?.district) params.set("district", filters.district);
+  if (filters?.lat != null && filters?.lng != null) {
+    params.set("lat", String(filters.lat));
+    params.set("lng", String(filters.lng));
+  }
+  if (filters?.specialty) params.set("specialty", filters.specialty);
+  const qs = params.toString();
+  const url = qs ? `/api/hospitals?${qs}` : "/api/hospitals";
+  return useQuery<Hospital[]>({ queryKey: ["hospitals", qs], queryFn: () => fetchJson(url) });
+}
+
+export function useDistricts() {
+  return useQuery<{ districts: string[] }>({ queryKey: ["districts"], queryFn: () => fetch("/api/hospitals", { method: "POST" }).then(r => r.json()) });
 }
 
 export function useDoctors(hospitalId?: string) {

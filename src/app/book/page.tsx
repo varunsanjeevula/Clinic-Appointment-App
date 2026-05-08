@@ -79,7 +79,7 @@ function BookPageInner() {
         <h2 className="text-xl font-bold text-primary mb-2">Appointment Booked!</h2>
         <p className="text-sm text-muted-foreground mb-6">Successfully scheduled with {selectedDoc?.name}.</p>
         <div className="flex gap-3 justify-center">
-          <Button asChild><Link href="/queue">View Queue</Link></Button>
+          <Button asChild><Link href="/my-appointments">Your Appointments</Link></Button>
           <Button variant="outline" asChild><Link href="/register">New Patient</Link></Button>
         </div>
       </CardContent></Card>

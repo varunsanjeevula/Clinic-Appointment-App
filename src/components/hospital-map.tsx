@@ -73,13 +73,14 @@ export function HospitalMap({
 
   // Update markers when hospitals or user location change
   const updateMarkers = useCallback(() => {
-    if (!L || !mapRef.current || !markersRef.current) return;
+    const Leaflet = L;
+    if (!Leaflet || !mapRef.current || !markersRef.current) return;
 
     markersRef.current.clearLayers();
 
     // User location marker
     if (userLocation) {
-      const userIcon = L.divIcon({
+      const userIcon = Leaflet.divIcon({
         className: "user-location-marker",
         html: `<div style="
           width: 20px; height: 20px;
@@ -92,7 +93,7 @@ export function HospitalMap({
         iconAnchor: [10, 10],
       });
 
-      L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
+      Leaflet.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
         .addTo(markersRef.current)
         .bindPopup(`<div style="text-align:center;font-weight:600;font-size:13px;">📍 Your Location</div>`);
     }
@@ -102,7 +103,7 @@ export function HospitalMap({
       const isSelected = h.id === selectedHospitalId;
       const color = isSelected ? "#10b981" : h.has_emergency ? "#ef4444" : "#6366f1";
 
-      const icon = L.divIcon({
+      const icon = Leaflet.divIcon({
         className: "hospital-marker",
         html: `<div style="
           width: ${isSelected ? "32px" : "26px"};
@@ -141,7 +142,7 @@ export function HospitalMap({
         </div>
       `;
 
-      const marker = L.marker([h.lat, h.lng], { icon })
+      const marker = Leaflet.marker([h.lat, h.lng], { icon })
         .addTo(markersRef.current!)
         .bindPopup(popup);
 
@@ -154,7 +155,7 @@ export function HospitalMap({
     const points: [number, number][] = hospitals.map(h => [h.lat, h.lng]);
     if (userLocation) points.push([userLocation.lat, userLocation.lng]);
     if (points.length > 0) {
-      const bounds = L.latLngBounds(points);
+      const bounds = Leaflet.latLngBounds(points);
       mapRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
     }
   }, [hospitals, userLocation, selectedHospitalId, onHospitalClick]);

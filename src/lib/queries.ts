@@ -79,6 +79,27 @@ export function useCancelAppointment() {
   return useMutation({ mutationFn: (id: string) => fetch(`/api/appointments/${id}/cancel`, { method: "PATCH" }).then(r => r.json()), onSuccess: () => { qc.invalidateQueries({ queryKey: ["appointments"] }); qc.invalidateQueries({ queryKey: ["stats"] }); } });
 }
 
+export function useRescheduleAppointment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, new_date, new_time_slot, reason }: { id: string; new_date: string; new_time_slot: string; reason: string }) => {
+      const res = await fetch(`/api/appointments/${id}/reschedule`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ new_date, new_time_slot, reason }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Reschedule failed");
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["appointments"] });
+      qc.invalidateQueries({ queryKey: ["stats"] });
+      qc.invalidateQueries({ queryKey: ["slots"] });
+    },
+  });
+}
+
 export function useSetDoctorLeave() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: ({ doctorId, data }: { doctorId: string; data: Record<string, string> }) => postJson(`/api/doctors/${doctorId}/leaves`, data), onSuccess: () => { qc.invalidateQueries({ queryKey: ["leaves"] }); qc.invalidateQueries({ queryKey: ["doctors"] }); } });

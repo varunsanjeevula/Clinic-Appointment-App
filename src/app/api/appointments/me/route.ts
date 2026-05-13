@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 
     // Match by logged-in user's name
     if (userName) {
-      orConditions.push(`patient_name.eq.${userName}`);
+      orConditions.push(`patient_name.eq."${userName}"`);
     }
 
     // Match by locally booked IDs

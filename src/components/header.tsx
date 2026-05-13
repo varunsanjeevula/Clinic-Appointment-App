@@ -1,14 +1,14 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Sun, Moon, Search, Menu, User, LogOut, Mail, Calendar as CalendarIcon } from "lucide-react";
+import { Sun, Moon, Search, User, LogOut, Mail, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "@/lib/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
-export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
+export function Header() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { data: user, isLoading: userLoading } = useUser();
@@ -30,9 +30,6 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   return (
     <header className="sticky top-0 z-40 h-14 border-b border-border bg-background/80 backdrop-blur-xl flex items-center justify-between px-4 lg:px-6">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenuClick}>
-          <Menu className="w-5 h-5" />
-        </Button>
         <div className="lg:hidden flex items-center gap-2">
           <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">M</div>
           <span className="font-bold text-sm">Med<span className="text-primary">Queue</span></span>

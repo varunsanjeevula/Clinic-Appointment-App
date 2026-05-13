@@ -2,13 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DashboardStats, Appointment, Hospital, Doctor, DoctorLeave, User } from "./types";
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
+  const res = await fetch(url, { credentials: "include" });
   if (!res.ok) throw new Error("Failed to fetch");
   return res.json();
 }
 
 async function postJson<T>(url: string, body: unknown): Promise<T> {
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), credentials: "include" });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Request failed");
   return data;
@@ -76,7 +76,7 @@ export function useBookAppointment() {
 
 export function useCancelAppointment() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: (id: string) => fetch(`/api/appointments/${id}/cancel`, { method: "PATCH" }).then(r => r.json()), onSuccess: () => { qc.invalidateQueries({ queryKey: ["appointments"] }); qc.invalidateQueries({ queryKey: ["stats"] }); } });
+  return useMutation({ mutationFn: (id: string) => fetch(`/api/appointments/${id}/cancel`, { method: "PATCH", credentials: "include" }).then(r => r.json()), onSuccess: () => { qc.invalidateQueries({ queryKey: ["appointments"] }); qc.invalidateQueries({ queryKey: ["stats"] }); } });
 }
 
 export function useRescheduleAppointment() {
@@ -87,6 +87,7 @@ export function useRescheduleAppointment() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ new_date, new_time_slot, reason }),
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Reschedule failed");

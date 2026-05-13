@@ -38,19 +38,19 @@ function StatCard({ icon: Icon, label, value, trend, color, isLoading }: {
   return (
     <motion.div variants={item}>
       <Card className="relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
-        <CardContent className="p-5">
-          <div className="flex items-start justify-between mb-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
-              <Icon className="w-5 h-5" />
+        <CardContent className="p-3 sm:p-5">
+          <div className="flex items-start justify-between mb-2 sm:mb-3">
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${color}`}>
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <Badge variant="secondary" className="text-[10px] font-semibold">{trend}</Badge>
+            <Badge variant="secondary" className="text-[9px] sm:text-[10px] font-semibold hidden sm:flex">{trend}</Badge>
           </div>
           {isLoading ? (
-            <Skeleton className="h-9 w-20 mb-1" />
+            <Skeleton className="h-7 sm:h-9 w-16 sm:w-20 mb-1" />
           ) : (
-            <div className="text-3xl font-extrabold tracking-tight">{value ?? 0}</div>
+            <div className="text-2xl sm:text-3xl font-extrabold tracking-tight">{value ?? 0}</div>
           )}
-          <p className="text-xs text-muted-foreground mt-1">{label}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 truncate">{label}</p>
         </CardContent>
         <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${color.replace("bg-", "bg-").replace("/10", "")}`} />
       </Card>
@@ -74,36 +74,39 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
         {/* Greeting */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{getGreeting()}</h1>
-            <p className="text-sm text-muted-foreground">Here&apos;s your clinic overview for today.</p>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{getGreeting()}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Here&apos;s your clinic overview for today.</p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground border rounded-lg px-3 py-1.5">
+            <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground border rounded-lg px-3 py-1.5">
               <Clock className="w-3.5 h-3.5" />
               {formatDateLong()}
             </div>
             <Button size="sm" asChild>
-              <Link href="/register"><UserPlus className="w-3.5 h-3.5 mr-1.5" />New Patient</Link>
+              <Link href="/register">
+                <UserPlus className="w-3.5 h-3.5 sm:mr-1.5" />
+                <span className="hidden sm:inline">New Patient</span>
+              </Link>
             </Button>
           </div>
         </div>
 
-        {/* Stats Bento Grid */}
-        <motion.div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" variants={container} initial="hidden" animate="show">
+        {/* Stats Bento Grid — 2x2 on mobile, 4 columns on xl */}
+        <motion.div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4" variants={container} initial="hidden" animate="show">
           <StatCard icon={Users} label="Total Patients" value={stats?.totalPatients} trend="↑ Active" color="bg-primary/10 text-primary" isLoading={statsLoading} />
-          <StatCard icon={CalendarCheck} label="Today's Appointments" value={stats?.todayAppointments} trend="Today" color="bg-blue-500/10 text-blue-500" isLoading={statsLoading} />
+          <StatCard icon={CalendarCheck} label="Today's Appts" value={stats?.todayAppointments} trend="Today" color="bg-blue-500/10 text-blue-500" isLoading={statsLoading} />
           <StatCard icon={AlertCircle} label="Critical Cases" value={stats?.criticalCases} trend="Urgent" color="bg-destructive/10 text-destructive" isLoading={statsLoading} />
-          <StatCard icon={HeartPulse} label="Available Doctors" value={stats?.availableDoctors} trend="Online" color="bg-amber-500/10 text-amber-500" isLoading={statsLoading} />
+          <StatCard icon={HeartPulse} label="Available Docs" value={stats?.availableDoctors} trend="Online" color="bg-amber-500/10 text-amber-500" isLoading={statsLoading} />
         </motion.div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions — 2 cols on mobile */}
         <div>
-          <h2 className="text-base font-semibold mb-3">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <h2 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3">Quick Actions</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
             {[
               { href: "/register", icon: UserPlus, label: "Register Patient", sub: "New patient intake", color: "text-primary", showFor: "user" },
               { href: "/my-appointments", icon: CalendarDays, label: "Your Appointments", sub: "Manage visits", color: "text-blue-500", showFor: "user" },
@@ -111,14 +114,14 @@ export default function DashboardPage() {
               { href: "/doctors", icon: Stethoscope, label: "Manage Doctors", sub: "Leaves & availability", color: "text-amber-500", showFor: "admin" },
             ].filter(a => a.showFor === "both" || (isAdmin && a.showFor === "admin") || (!isAdmin && a.showFor === "user")).map((a) => (
               <Link key={a.href} href={a.href}>
-                <Card className="hover:shadow-sm hover:border-primary/20 transition-all duration-200 cursor-pointer group h-full">
-                  <CardContent className="flex items-center gap-3 p-4">
-                    <div className={`w-9 h-9 rounded-lg bg-muted flex items-center justify-center ${a.color} group-hover:scale-105 transition-transform`}>
-                      <a.icon className="w-4 h-4" />
+                <Card className="hover:shadow-sm hover:border-primary/20 transition-all duration-200 cursor-pointer group h-full active:scale-[0.98]">
+                  <CardContent className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4">
+                    <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-muted flex items-center justify-center ${a.color} group-hover:scale-105 transition-transform flex-shrink-0`}>
+                      <a.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold">{a.label}</p>
-                      <p className="text-[11px] text-muted-foreground">{a.sub}</p>
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm font-semibold truncate">{a.label}</p>
+                      <p className="text-[10px] sm:text-[11px] text-muted-foreground hidden sm:block">{a.sub}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -128,17 +131,17 @@ export default function DashboardPage() {
         </div>
 
         {/* Dashboard Grid: Chart + Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Chart */}
           <Card className="lg:col-span-2">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base">Weekly Appointments</CardTitle>
+                <CardTitle className="text-sm sm:text-base">Weekly Appointments</CardTitle>
                 <Badge variant="secondary" className="text-[10px]"><TrendingUp className="w-3 h-3 mr-1" />+12%</Badge>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={160} className="sm:!h-[200px]">
                 <AreaChart data={mockChartData}>
                   <defs>
                     <linearGradient id="colorAppts" x1="0" y1="0" x2="0" y2="1">
@@ -146,7 +149,7 @@ export default function DashboardPage() {
                       <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
                   <YAxis hide />
                   <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: 12 }} />
                   <Area type="monotone" dataKey="appointments" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#colorAppts)" />
@@ -159,7 +162,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base">Activity</CardTitle>
+                <CardTitle className="text-sm sm:text-base">Activity</CardTitle>
                 <Badge className="text-[10px] bg-primary/10 text-primary border-primary/20">Live</Badge>
               </div>
             </CardHeader>
@@ -185,44 +188,76 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Recent Table */}
+        {/* Recent — Desktop Table / Mobile Cards */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Recent Appointments</CardTitle>
+            <CardTitle className="text-sm sm:text-base">Recent Appointments</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Patient</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Doctor</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Hospital</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Date</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Time</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Severity</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <TableRow key={i}>{Array.from({ length: 6 }).map((_, j) => (<TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>))}</TableRow>
-                  ))
-                ) : (recent ?? []).length === 0 ? (
-                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8 text-sm">No appointments yet</TableCell></TableRow>
-                ) : (
-                  (recent ?? []).map((a) => (
-                    <TableRow key={a.id}>
-                      <TableCell className="font-medium text-sm">{a.patient_name}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{a.doctor_name}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{a.hospital_name}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{new Date(a.appointment_date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{a.time_slot}</TableCell>
-                      <TableCell><Badge variant={a.severity === "critical" ? "destructive" : "secondary"} className="text-[10px]">{a.severity}</Badge></TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+            {/* Desktop Table */}
+            <div className="hidden sm:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-[10px] uppercase tracking-wider">Patient</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-wider">Doctor</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-wider">Hospital</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-wider">Date</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-wider">Time</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-wider">Severity</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentLoading ? (
+                    Array.from({ length: 3 }).map((_, i) => (
+                      <TableRow key={i}>{Array.from({ length: 6 }).map((_, j) => (<TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>))}</TableRow>
+                    ))
+                  ) : (recent ?? []).length === 0 ? (
+                    <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8 text-sm">No appointments yet</TableCell></TableRow>
+                  ) : (
+                    (recent ?? []).map((a) => (
+                      <TableRow key={a.id}>
+                        <TableCell className="font-medium text-sm">{a.patient_name}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{a.doctor_name}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{a.hospital_name}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{new Date(a.appointment_date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{a.time_slot}</TableCell>
+                        <TableCell><Badge variant={a.severity === "critical" ? "destructive" : "secondary"} className="text-[10px]">{a.severity}</Badge></TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Card List */}
+            <div className="sm:hidden divide-y divide-border">
+              {recentLoading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="p-3 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                ))
+              ) : (recent ?? []).length === 0 ? (
+                <div className="py-8 text-center text-muted-foreground text-sm">No appointments yet</div>
+              ) : (
+                (recent ?? []).map((a) => (
+                  <div key={a.id} className="p-3 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold truncate">{a.patient_name}</span>
+                      <Badge variant={a.severity === "critical" ? "destructive" : "secondary"} className="text-[9px] flex-shrink-0">{a.severity}</Badge>
+                    </div>
+                    <div className="flex flex-wrap gap-x-3 text-[11px] text-muted-foreground">
+                      <span>👨‍⚕️ {a.doctor_name}</span>
+                      <span>📅 {new Date(a.appointment_date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                      <span>🕐 {a.time_slot}</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground/70 truncate">🏥 {a.hospital_name}</p>
+                  </div>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -47,7 +47,6 @@ export default function QueuePage() {
 
   const isAdmin = user?.email?.toLowerCase() === "admin@gmail.com";
 
-  // Determine doctor ID for slot lookup — use doctor_id if UUID, else use doctor_name as key
   const rescheduleDoctorId = rescheduleAppointment?.doctor_id || rescheduleAppointment?.doctor_name || "";
   const { data: bookedSlots } = useBookedSlots(rescheduleDoctorId, newDate);
 
@@ -111,17 +110,17 @@ export default function QueuePage() {
 
   return (
     <AppShell>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Appointment Queue</h1>
-            <p className="text-sm text-muted-foreground">Priority-ordered — critical patients first.</p>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Appointment Queue</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Priority-ordered — critical patients first.</p>
           </div>
           <Tabs value={filter} onValueChange={setFilter}>
-            <TabsList>
-              <TabsTrigger value="all">All <span className="ml-1 text-[10px] opacity-60">({appointments?.length ?? 0})</span></TabsTrigger>
-              <TabsTrigger value="critical">Critical</TabsTrigger>
-              <TabsTrigger value="normal">Normal</TabsTrigger>
+            <TabsList className="h-8 sm:h-9">
+              <TabsTrigger value="all" className="text-xs sm:text-sm">All <span className="ml-1 text-[10px] opacity-60">({appointments?.length ?? 0})</span></TabsTrigger>
+              <TabsTrigger value="critical" className="text-xs sm:text-sm">Critical</TabsTrigger>
+              <TabsTrigger value="normal" className="text-xs sm:text-sm">Normal</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -153,7 +152,7 @@ export default function QueuePage() {
 
         {/* View Details Dialog */}
         <Dialog open={!!viewAppointment} onOpenChange={() => setViewAppointment(null)}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Patient Details</DialogTitle></DialogHeader>
             {viewAppointment?.patients ? (
               <div className="space-y-4">
@@ -169,7 +168,7 @@ export default function QueuePage() {
                   {viewAppointment.patients.email && (
                     <div>
                       <span className="text-xs text-muted-foreground uppercase font-semibold">Email</span>
-                      <p className="font-medium">{viewAppointment.patients.email}</p>
+                      <p className="font-medium text-xs break-all">{viewAppointment.patients.email}</p>
                     </div>
                   )}
                   {viewAppointment.patients.dob && (
@@ -250,7 +249,6 @@ export default function QueuePage() {
               </motion.div>
             ) : (
               <div className="space-y-5">
-                {/* Current appointment info */}
                 {rescheduleAppointment && (
                   <div className="bg-muted/60 rounded-lg p-3 border space-y-1">
                     <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Current Appointment</p>
@@ -263,7 +261,6 @@ export default function QueuePage() {
                   </div>
                 )}
 
-                {/* Step 1: New Date */}
                 <div>
                   <h4 className="text-sm font-semibold mb-2">1. Select New Date</h4>
                   <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
@@ -281,7 +278,6 @@ export default function QueuePage() {
                   </div>
                 </div>
 
-                {/* Step 2: New Time Slot */}
                 {newDate && (
                   <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
                     <h4 className="text-sm font-semibold mb-2">2. Choose New Time Slot</h4>
@@ -310,7 +306,6 @@ export default function QueuePage() {
                   </motion.div>
                 )}
 
-                {/* Step 3: Reason */}
                 {newSlot && (
                   <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
                     <h4 className="text-sm font-semibold mb-2">3. Reason for Rescheduling</h4>
@@ -323,12 +318,11 @@ export default function QueuePage() {
                   </motion.div>
                 )}
 
-                {/* Summary + Confirm */}
                 {newDate && newSlot && reason.trim() && (
                   <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-                    <div className="bg-gradient-to-r from-muted/50 to-primary/5 rounded-lg p-4 border space-y-3">
+                    <div className="bg-gradient-to-r from-muted/50 to-primary/5 rounded-lg p-3 sm:p-4 border space-y-3">
                       <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Change Summary</p>
-                      <div className="flex items-center gap-3 text-sm">
+                      <div className="flex items-center gap-2 sm:gap-3 text-sm">
                         <div className="flex-1 bg-red-50 dark:bg-red-950/30 rounded-lg p-2 text-center border border-red-200 dark:border-red-800">
                           <p className="text-[9px] uppercase font-bold text-red-500 mb-0.5">Previous</p>
                           <p className="font-medium text-red-700 dark:text-red-400 text-xs line-through">
@@ -356,7 +350,7 @@ export default function QueuePage() {
                   </div>
                 )}
 
-                <DialogFooter>
+                <DialogFooter className="flex-col sm:flex-row gap-2">
                   <Button variant="ghost" onClick={closeReschedule}>Cancel</Button>
                   <Button
                     onClick={handleReschedule}
@@ -391,36 +385,39 @@ function QueueSection({ label, count, items, color, onCancel, onView, onReschedu
       {items.map((a, i) => (
         <motion.div key={a.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05, duration: 0.25 }}>
           <Card className="group hover:shadow-sm transition-shadow">
-            <CardContent className="flex items-center gap-4 p-4">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-sm ${color === "destructive" ? "bg-destructive/10 text-destructive border border-destructive/20" : "bg-primary/10 text-primary border border-primary/20"}`}>
-                {startPos + i}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="font-semibold text-sm truncate">{a.patient_name}</span>
-                  <Badge variant={a.severity === "critical" ? "destructive" : "secondary"} className="text-[9px]">{a.severity}</Badge>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-extrabold text-xs sm:text-sm flex-shrink-0 ${color === "destructive" ? "bg-destructive/10 text-destructive border border-destructive/20" : "bg-primary/10 text-primary border border-primary/20"}`}>
+                  {startPos + i}
                 </div>
-                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
-                  <span>👨‍⚕️ {a.doctor_name}</span>
-                  <span>🏥 {a.hospital_name}</span>
-                  <span>📅 {new Date(a.appointment_date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
-                  <span>🕐 {a.time_slot}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="font-semibold text-sm truncate">{a.patient_name}</span>
+                    <Badge variant={a.severity === "critical" ? "destructive" : "secondary"} className="text-[9px]">{a.severity}</Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                    <span>👨‍⚕️ {a.doctor_name}</span>
+                    <span>🏥 {a.hospital_name}</span>
+                    <span>📅 {new Date(a.appointment_date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                    <span>🕐 {a.time_slot}</span>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button variant="outline" size="sm" className="text-xs" onClick={() => onView(a)}>
+              {/* Action buttons — always visible on mobile, hover-reveal on desktop */}
+              <div className="flex gap-2 mt-3 pt-2 border-t border-border/50 lg:mt-0 lg:pt-0 lg:border-0 lg:opacity-0 lg:group-hover:opacity-100 lg:transition-opacity lg:absolute lg:right-4 lg:top-1/2 lg:-translate-y-1/2">
+                <Button variant="outline" size="sm" className="text-xs flex-1 lg:flex-none h-8" onClick={() => onView(a)}>
                   View
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                  className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 flex-1 lg:flex-none h-8"
                   onClick={() => onReschedule(a)}
                 >
                   <CalendarClock className="w-3 h-3 mr-1" />
                   Reschedule
                 </Button>
-                <Button variant="ghost" size="sm" className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => onCancel(a.id)}>
+                <Button variant="ghost" size="sm" className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10 flex-1 lg:flex-none h-8" onClick={() => onCancel(a.id)}>
                   Cancel
                 </Button>
               </div>

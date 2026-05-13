@@ -15,10 +15,10 @@ export default function YourAppointmentsPage() {
 
   return (
     <AppShell>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Your Appointments</h1>
-          <p className="text-sm text-muted-foreground">Manage and track your upcoming and past clinic visits.</p>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Your Appointments</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Manage and track your upcoming and past clinic visits.</p>
         </div>
 
         {isLoading ? (
@@ -44,7 +44,7 @@ export default function YourAppointmentsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {appointments.map((a, i) => (
               <motion.div 
                 key={a.id} 
@@ -91,7 +91,7 @@ export default function YourAppointmentsPage() {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="w-full gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                        className="w-full gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 text-xs sm:text-sm"
                         onClick={() => {
                           const hospital = TN_HOSPITALS.find(h => h.name === a.hospital_name || h.id === a.hospital_id);
                           if (hospital) {

@@ -66,13 +66,13 @@ export default function HospitalsPage() {
     <AppShell>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
+              <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               Tamil Nadu Hospitals
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {hospitals?.length ?? 0} verified healthcare facilities across Tamil Nadu
             </p>
           </div>
@@ -142,7 +142,7 @@ export default function HospitalsPage() {
         </div>
 
         {/* Map + List Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
           {/* Map */}
           <div className="lg:col-span-3">
             <HospitalMap
@@ -150,9 +150,9 @@ export default function HospitalsPage() {
               userLocation={userLoc}
               selectedHospitalId={selectedId}
               onHospitalClick={handleHospitalClick}
-              className="h-[500px] shadow-sm"
+              className="h-[280px] sm:h-[400px] lg:h-[500px] shadow-sm"
             />
-            <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1.5">
+            <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1.5 flex-wrap">
               <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block border-2 border-white shadow" /> You
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block border-2 border-white shadow ml-2" /> Emergency
               <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block border-2 border-white shadow ml-2" /> Hospital
@@ -161,7 +161,7 @@ export default function HospitalsPage() {
           </div>
 
           {/* Hospital List */}
-          <div className="lg:col-span-2 space-y-3 max-h-[540px] overflow-y-auto pr-1">
+          <div className="lg:col-span-2 space-y-3 max-h-[400px] lg:max-h-[540px] overflow-y-auto pr-1 mobile-no-scrollbar">
             <h3 className="text-sm font-semibold sticky top-0 bg-background py-1 z-10">
               {userLoc ? "Nearest Hospitals" : "All Hospitals"}
               <span className="text-muted-foreground font-normal ml-1">({hospitals?.length ?? 0})</span>
@@ -202,7 +202,7 @@ export default function HospitalsPage() {
             >
               <Card className="border-primary/20 bg-primary/[0.02]">
                 <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">🏥</span>

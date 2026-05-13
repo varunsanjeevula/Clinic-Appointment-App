@@ -43,11 +43,11 @@ export default function DoctorsPage() {
 
   return (
     <AppShell>
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Doctor Management</h1>
-            <p className="text-sm text-muted-foreground">View all doctors, availability status, and manage leaves.</p>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Doctor Management</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">View all doctors, availability status, and manage leaves.</p>
           </div>
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

@@ -65,7 +65,7 @@ export function ChatBot() {
     <>
       {/* Floating Action Button */}
       <motion.div
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-50"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -73,9 +73,9 @@ export function ChatBot() {
         <Button
           onClick={() => setIsOpen(true)}
           size="icon"
-          className="w-14 h-14 rounded-full shadow-lg bg-teal-600 hover:bg-teal-700 text-white"
+          className="w-12 h-12 lg:w-14 lg:h-14 rounded-full shadow-lg bg-teal-600 hover:bg-teal-700 text-white"
         >
-          <MessageCircle className="w-6 h-6" />
+          <MessageCircle className="w-5 h-5 lg:w-6 lg:h-6" />
         </Button>
       </motion.div>
 
@@ -87,8 +87,8 @@ export function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 shadow-2xl rounded-2xl overflow-hidden flex flex-col border border-border bg-background"
-            style={{ height: "500px", maxHeight: "80vh" }}
+            className="fixed bottom-36 right-4 left-4 lg:bottom-24 lg:right-6 lg:left-auto z-50 lg:w-96 shadow-2xl rounded-2xl overflow-hidden flex flex-col border border-border bg-background"
+            style={{ height: "400px", maxHeight: "70vh" }}
           >
             <CardHeader className="bg-teal-600 text-white p-4 flex flex-row items-center justify-between shadow-sm">
               <div className="flex items-center gap-2">

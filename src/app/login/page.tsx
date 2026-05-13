@@ -153,7 +153,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-white overflow-hidden selection:bg-teal-500/30">
+    <div className="min-h-screen w-full flex bg-white overflow-hidden selection:bg-teal-500/30 dark:bg-background">
       
       {/* ---------------- LEFT PANEL (BRANDING) ---------------- */}
       <div className="hidden lg:flex w-1/2 relative bg-teal-900 overflow-hidden items-center justify-center p-12">
@@ -204,7 +204,7 @@ export default function AuthPage() {
       </div>
 
       {/* ---------------- RIGHT PANEL (FORM) ---------------- */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-5 py-8 sm:p-12 relative">
         {/* Mobile Logo */}
         <div className="absolute top-8 left-8 lg:hidden flex items-center gap-2">
           <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
@@ -226,7 +226,7 @@ export default function AuthPage() {
               {view === "login" && (
                 <form onSubmit={handleLogin} className="space-y-8">
                   <div>
-                    <h2 className="text-3xl font-bold tracking-tight text-slate-900">Welcome back</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-foreground">Welcome back</h2>
                     <p className="text-slate-500 mt-2">Please enter your details to sign in.</p>
                   </div>
 
@@ -290,7 +290,7 @@ export default function AuthPage() {
                         <Input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="pl-11 h-12 bg-slate-50 border-slate-200 focus:bg-white focus:ring-2 focus:ring-teal-600/20 focus:border-teal-600 transition-all rounded-xl" placeholder="you@example.com" />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label className="text-sm font-semibold text-slate-700">Password</Label>
                         <div className="relative group">
